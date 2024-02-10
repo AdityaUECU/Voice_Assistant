@@ -3,11 +3,18 @@ import pyttsx3
 import speech_recognition as sr
 import requests
 from bs4 import BeautifulSoup
+import pyautogui
+import speedtest
 
-engine = pyttsx3.init("sapi5")
-voices = engine.getProperty("voices")
-engine.setProperty("voice", voices[1].id)
-engine.setProperty("rate", 180)
+
+from INTRO import play_gif
+play_gif
+
+engine = pyttsx3.init()
+rate = engine.getProperty('rate')
+engine.setProperty('rate', 180)
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
 
 
 def speak(audio):
@@ -31,6 +38,7 @@ def takeCommand():
         print("Say that Again.\n")
         return "none"
     return query
+
 
 
 if __name__ == "__main__":
@@ -58,12 +66,26 @@ if __name__ == "__main__":
                 elif "thank" in query:
                     speak("you're welcome sir")
                 elif "open" in query:
-                    from dictApps import openapp
-                    openapp(query)
+                    from dictApps import open_app
+                    open_app(query)
                 elif "close" in query:
                     from dictApps import close_app
                     close_app(query)
-
+                elif "pause" in query:
+                    pyautogui.press("k")
+                    speak("video paused")
+                elif "resume video" in query:
+                    pyautogui.press("k")
+                    speak("video played")
+                elif "mute" in query:
+                    pyautogui.press("m")
+                    speak("video mute")
+                elif "volume up" in query:
+                    from keyboard import volumeup
+                    volumeup()
+                elif "volume down" in query:
+                    from keyboard import volumedown
+                    volumedown()
                 elif "google" in query:
                     from searchnow import searchGoogle
                     searchGoogle(query)
@@ -87,6 +109,23 @@ if __name__ == "__main__":
                     data = BeautifulSoup(r.text, "html.parser")
                     temp = data.find("div", class_ = "BNeawe").text
                     speak(f"current{search} is {temp}")
+                elif "news" in query:
+                    from newsRead import latestNews
+                    latestNews()
+                elif "whatsapp" in query:
+                    from whatsapp import sendMsg
+                    sendMsg()
+
+                elif "internet speed" in query:
+                    wifi = speedtest.Speedtest()
+                    upload = wifi.upload()/1048576
+                    down = wifi.download()/1048576
+                    print(f"Wifi Upload speed is {upload} MB")
+                    print(f"Wifi Download speed is {down} MB")
+                    speak(f"Wifi Upload speed is {upload} MB")
+                    speak(f"Wifi Download speed is {down} MB")
+
+
                 elif "time" in query:
                     strTime = datetime.datetime.now().strftime("%H:%M:%S")
                     print(f"Sir, the time is: {strTime}")
@@ -95,3 +134,14 @@ if __name__ == "__main__":
                 elif "finally sleep" in query:
                     speak("Going to sleep, Sir!")
                     exit()
+
+                elif "remember that" in query:
+                    msg = query.replace("remember that", "")
+                    msg = query.replace("coco", "")
+                    speak("you told me"+ msg)
+                    remember = open("remember.txt", "w")
+                    remember.write(msg)
+                    remember.close()
+                elif "what do you remember" in query:
+                    remember = open("remember.txt", "r")
+                    speak("you told me" + remember.read())

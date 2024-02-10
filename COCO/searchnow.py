@@ -22,10 +22,11 @@ def takeCommand():
 
 query = takeCommand().lower()
 
-engine = pyttsx3.init("sapi5")
-voices = engine.getProperty("voices")
-engine.setProperty("voice", voices[0].id)
-engine.setProperty("rate", 180)
+engine = pyttsx3.init()
+rate = engine.getProperty('rate')
+engine.setProperty('rate', 180)
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
 
 def speak(audio):
     engine.say(audio)
